@@ -4,8 +4,9 @@
 
 [![Author](https://img.shields.io/badge/Author-Tunahan_Haksever-8b5cf6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/tunahanhaksever)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Launch_Studio-00f2fe?style=for-the-badge&logo=googlechrome&logoColor=black)](https://tunahanhaksever.github.io/bitigey-design-studio/)
+[![Tusi Lang](https://img.shields.io/badge/Language-Tusi_Lang_(.tusi)-e11d48?style=for-the-badge&logo=codeforces&logoColor=white)](https://tunahanhaksever.github.io/tusi-lang/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-10b981?style=for-the-badge)](LICENSE)
-[![Languages](https://img.shields.io/badge/Stack-JavaScript_%7C_TypeScript_%7C_Python_%7C_C_WASM-f59e0b?style=for-the-badge)](https://tunahanhaksever.github.io/bitigey-design-studio/)
+[![Languages](https://img.shields.io/badge/Stack-JavaScript_%7C_TypeScript_%7C_Python_%7C_Tusi_%7C_C-f59e0b?style=for-the-badge)](https://tunahanhaksever.github.io/bitigey-design-studio/)
 [![Platform](https://img.shields.io/badge/Platform-Web_/_Desktop_PWA-3b82f6?style=for-the-badge)](https://tunahanhaksever.github.io/bitigey-design-studio/)
 
 **Tarayıcı üzerinde çalışan, çok katmanlı (multi-layer) vektör çizim motoru, lüks tipografi atölyesi, piksel düzeyinde görsel filtreleme, hazır sosyal medya ve yayın şablonları, C/WASM filtre çekirdeği ve Python otomasyon CLI modülü içeren hepsi bir arada grafik tasarım stüdyosu.**

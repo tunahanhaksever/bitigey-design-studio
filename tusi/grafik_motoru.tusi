@@ -1,0 +1,68 @@
+// ==========================================================
+// Bitigey Design Studio - Tusi Grafik & Vektör Motoru
+// Geliştirici: Tunahan Haksever
+// ==========================================================
+
+yazdır("✦ Bitigey Design Studio Tusi Grafik Çekirdeği Başlatılıyor...")
+
+// Katman Koordinat Hesaplama Fonksiyonu
+fonksiyon katman_merkez_hesapla(x, y, genislik, yukseklik) {
+    değişken merkez_x = x + (genislik / 2)
+    değişken merkez_y = y + (yukseklik / 2)
+    döndür [merkez_x, merkez_y]
+}
+
+// Renk Parlaklık ve Kontrast Filtresi
+fonksiyon piksel_filtrele(r, g, b, parlaklik_carpani, kontrast_carpani) {
+    değişken yeni_r = ((r - 128) * kontrast_carpani) + 128 + parlaklik_carpani
+    değişken yeni_g = ((g - 128) * kontrast_carpani) + 128 + parlaklik_carpani
+    değişken yeni_b = ((b - 128) * kontrast_carpani) + 128 + parlaklik_carpani
+    
+    // Değer sınırlandırma (0 - 255)
+    eğer (yeni_r > 255) ise { yeni_r = 255 }
+    eğer (yeni_g > 255) ise { yeni_g = 255 }
+    eğer (yeni_b > 255) ise { yeni_b = 255 }
+    
+    döndür [yeni_r, yeni_g, yeni_b]
+}
+
+// Banner Şablonu Üretici
+fonksiyon banner_katmanlari_olustur(baslik_metni, yazar_adi) {
+    yazdır("🎨 Yeni Banner Katmanları Oluşturuluyor: " + baslik_metni)
+    
+    değişken arkaplan = {
+        "tip": "dikdortgen",
+        "x": 0,
+        "y": 0,
+        "genislik": 1200,
+        "yukseklik": 630,
+        "renk": "#0f172a"
+    }
+    
+    değişken baslik = {
+        "tip": "metin",
+        "metin": baslik_metni,
+        "font": "Cinzel",
+        "boyut": 54,
+        "renk": "#f59e0b",
+        "x": 100,
+        "y": 240
+    }
+    
+    değişken imza = {
+        "tip": "metin",
+        "metin": yazar_adi,
+        "font": "Outfit",
+        "boyut": 28,
+        "renk": "#00f2fe",
+        "x": 100,
+        "y": 480
+    }
+    
+    yazdır("✓ 3 Katman Başarıyla Hazırlandı!")
+    döndür [arkaplan, baslik, imza]
+}
+
+// Çalıştırma ve Test
+değişken sonuc = banner_katmanlari_olustur("BİTİGEY DİJİTAL SANAT", "Tunahan Haksever")
+yazdır("Başarıyla Tamamlandı: " + zaman_simdi())
