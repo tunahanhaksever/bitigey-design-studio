@@ -1,5 +1,5 @@
 /**
- * Bitigey Design Studio — Master Canvas & Vector Graphic Engine
+ * Bitigey Design Studio — Master Graphic & Painting Canvas Engine
  * Developed by Tunahan Haksever
  */
 
@@ -11,12 +11,12 @@ class DesignStudio {
     // Canvas Dimensions
     this.width = 800;
     this.height = 800;
-    this.bgColor = '#ffffff';
+    this.bgColor = '#0a0d14';
 
     // State
     this.layers = [];
     this.activeLayerId = null;
-    this.activeTool = 'select'; // select, rect, circle, triangle, star, arrow, text, brush, eraser
+    this.activeTool = 'select'; // select, brush, text, rect, circle, star, arrow
     this.isDrawing = false;
     this.isDragging = false;
     this.isResizing = false;
@@ -24,15 +24,14 @@ class DesignStudio {
     this.dragStart = { x: 0, y: 0 };
     this.layerStart = { x: 0, y: 0, w: 0, h: 0 };
 
+    // Brush Settings
+    this.brushColor = '#00f2fe';
+    this.brushSize = 6;
+    this.brushStyle = 'solid'; // solid, neon, highlighter
+
     // History (Undo / Redo)
     this.history = [];
     this.historyIndex = -1;
-
-    // Default Creation Styles
-    this.currentFill = '#3b82f6';
-    this.currentStroke = '#1e293b';
-    this.currentStrokeWidth = 0;
-    this.currentOpacity = 1.0;
 
     this.init();
   }
@@ -54,10 +53,14 @@ class DesignStudio {
   }
 
   bindEvents() {
-    // Canvas Mouse / Touch Events
-    this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
-    window.addEventListener('mousemove', (e) => this.onMouseMove(e));
-    window.addEventListener('mouseup', () => this.onMouseUp());
+    // Canvas Mouse & Touch Events for Drag & Drop and Painting
+    this.canvas.addEventListener('mousedown', (e) => this.onPointerDown(e));
+    window.addEventListener('mousemove', (e) => this.onPointerMove(e));
+    window.addEventListener('mouseup', () => this.onPointerUp());
+
+    this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
+    window.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
+    window.addEventListener('touchend', () => this.onPointerUp());
 
     // Left Toolbar Tools
     document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
@@ -65,6 +68,9 @@ class DesignStudio {
         document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.activeTool = btn.getAttribute('data-tool');
+        if (this.activeTool === 'brush') {
+          document.querySelector('.inspector-tab-btn[data-tab="brush"]')?.click();
+        }
       });
     });
 
@@ -80,13 +86,52 @@ class DesignStudio {
       });
     });
 
+    // Preset Dimensions
+    document.getElementById('preset-1080x1080')?.addEventListener('click', () => this.resizeCanvas(1080, 1080));
+    document.getElementById('preset-1080x1920')?.addEventListener('click', () => this.resizeCanvas(1080, 1920));
+    document.getElementById('preset-1280x720')?.addEventListener('click', () => this.resizeCanvas(1280, 720));
+
+    // Add Element Buttons
+    document.getElementById('btn-add-gold-badge')?.addEventListener('click', () => this.addGoldBadge());
+    document.getElementById('btn-add-luxury-title')?.addEventListener('click', () => this.addLuxuryTitle());
+    document.getElementById('btn-add-neon-card')?.addEventListener('click', () => this.addNeonCard());
+    document.getElementById('btn-add-quote-box')?.addEventListener('click', () => this.addQuoteBox());
+    document.getElementById('btn-add-callout')?.addEventListener('click', () => this.addCallout());
+    document.getElementById('btn-add-author-tag')?.addEventListener('click', () => this.addAuthorTag());
+
     // Image Upload
     const fileInput = document.getElementById('image-upload-input');
-    document.getElementById('btn-tool-upload').addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', (e) => this.handleImageUpload(e));
+    document.getElementById('btn-tool-upload')?.addEventListener('click', () => fileInput.click());
+    fileInput?.addEventListener('change', (e) => this.handleImageUpload(e));
+
+    // Delete Active Layer
+    document.getElementById('btn-delete-active')?.addEventListener('click', () => {
+      if (this.activeLayerId) this.deleteLayer(this.activeLayerId);
+    });
+
+    // Brush Controls
+    const brushColorPicker = document.getElementById('brush-color-picker');
+    brushColorPicker?.addEventListener('input', (e) => this.brushColor = e.target.value);
+    
+    document.querySelectorAll('.quick-color-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        this.brushColor = b.getAttribute('data-color');
+        if (brushColorPicker) brushColorPicker.value = this.brushColor;
+      });
+    });
+
+    const brushSizeSlider = document.getElementById('brush-size-slider');
+    brushSizeSlider?.addEventListener('input', (e) => {
+      this.brushSize = parseInt(e.target.value, 10);
+      document.getElementById('brush-size-val').innerText = `${this.brushSize} px`;
+    });
+
+    document.getElementById('brush-style-select')?.addEventListener('change', (e) => {
+      this.brushStyle = e.target.value;
+    });
 
     // Canvas Background Color
-    document.getElementById('canvas-bg-color').addEventListener('input', (e) => {
+    document.getElementById('canvas-bg-color')?.addEventListener('input', (e) => {
       this.bgColor = e.target.value;
       this.render();
       this.saveState();
@@ -95,15 +140,14 @@ class DesignStudio {
     // Inspector Inputs Binding
     this.bindInspectorControls();
 
-    // Export Buttons
-    document.getElementById('btn-open-export').addEventListener('click', () => {
-      document.getElementById('export-modal').classList.add('active');
+    // Export & Templates Modals
+    document.getElementById('btn-open-export')?.addEventListener('click', () => {
+      document.getElementById('export-modal')?.classList.add('active');
     });
-    document.getElementById('btn-open-templates').addEventListener('click', () => {
-      document.getElementById('templates-modal').classList.add('active');
+    document.getElementById('btn-open-templates')?.addEventListener('click', () => {
+      document.getElementById('templates-modal')?.classList.add('active');
     });
 
-    // Close Modals
     document.querySelectorAll('.modal-close-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
@@ -111,20 +155,20 @@ class DesignStudio {
     });
 
     // Export Triggers
-    document.getElementById('btn-export-png').addEventListener('click', () => this.exportImage('png'));
-    document.getElementById('btn-export-jpg').addEventListener('click', () => this.exportImage('jpeg'));
-    document.getElementById('btn-export-svg').addEventListener('click', () => this.exportSVG());
-    document.getElementById('btn-export-json').addEventListener('click', () => this.exportJSON());
-    document.getElementById('btn-import-json-trigger').addEventListener('click', () => {
-      document.getElementById('json-import-input').click();
+    document.getElementById('btn-export-png')?.addEventListener('click', () => this.exportImage('png'));
+    document.getElementById('btn-export-jpg')?.addEventListener('click', () => this.exportImage('jpeg'));
+    document.getElementById('btn-export-svg')?.addEventListener('click', () => this.exportSVG());
+    document.getElementById('btn-export-json')?.addEventListener('click', () => this.exportJSON());
+    document.getElementById('btn-import-json-trigger')?.addEventListener('click', () => {
+      document.getElementById('json-import-input')?.click();
     });
-    document.getElementById('json-import-input').addEventListener('change', (e) => this.importJSON(e));
+    document.getElementById('json-import-input')?.addEventListener('change', (e) => this.importJSON(e));
 
     // Undo / Redo
-    document.getElementById('btn-undo').addEventListener('click', () => this.undo());
-    document.getElementById('btn-redo').addEventListener('click', () => this.redo());
+    document.getElementById('btn-undo')?.addEventListener('click', () => this.undo());
+    document.getElementById('btn-redo')?.addEventListener('click', () => this.redo());
 
-    // Keyboard Shortcuts
+    // Shortcuts
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -136,9 +180,7 @@ class DesignStudio {
         e.preventDefault();
         this.redo();
       } else if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (this.activeLayerId) {
-          this.deleteLayer(this.activeLayerId);
-        }
+        if (this.activeLayerId) this.deleteLayer(this.activeLayerId);
       }
     });
 
@@ -169,26 +211,23 @@ class DesignStudio {
     bindInput('prop-y', 'y', true);
     bindInput('prop-w', 'width', true);
     bindInput('prop-h', 'height', true);
-    bindInput('prop-rotation', 'rotation', true);
     bindInput('prop-opacity', 'opacity', true);
     bindInput('prop-fill-color', 'fill');
     bindInput('prop-stroke-color', 'stroke');
     bindInput('prop-stroke-width', 'strokeWidth', true);
 
-    // Typography
     bindInput('prop-text-content', 'text');
     bindInput('prop-font-family', 'fontFamily');
     bindInput('prop-font-size', 'fontSize', true);
     bindInput('prop-letter-spacing', 'letterSpacing', true);
 
-    // Filters for image / general
     const bindFilter = (id, filterProp) => {
       const el = document.getElementById(id);
       if (!el) return;
       el.addEventListener('input', (e) => {
         const layer = this.getActiveLayer();
         if (!layer) return;
-        if (!layer.filters) layer.filters = { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0, invert: 0 };
+        if (!layer.filters) layer.filters = { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0 };
         layer.filters[filterProp] = parseFloat(e.target.value) || 0;
         this.render();
       });
@@ -199,11 +238,7 @@ class DesignStudio {
     bindFilter('filter-contrast', 'contrast');
     bindFilter('filter-saturate', 'saturate');
     bindFilter('filter-hue', 'hueRotate');
-    bindFilter('filter-blur', 'blur');
-    bindFilter('filter-sepia', 'sepia');
-    bindFilter('filter-grayscale', 'grayscale');
 
-    // Preset Filters
     document.querySelectorAll('.filter-preset-pill').forEach(pill => {
       pill.addEventListener('click', () => {
         const layer = this.getActiveLayer();
@@ -218,36 +253,36 @@ class DesignStudio {
   }
 
   applyFilterPreset(layer, preset) {
-    if (!layer.filters) layer.filters = { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0, invert: 0 };
+    if (!layer.filters) layer.filters = { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0 };
     if (preset === 'original') {
-      layer.filters = { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0, invert: 0 };
+      layer.filters = { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0 };
     } else if (preset === 'cyberpunk') {
-      layer.filters = { brightness: 115, contrast: 140, saturate: 180, hueRotate: 190, blur: 0, sepia: 0, grayscale: 0, invert: 0 };
+      layer.filters = { brightness: 115, contrast: 140, saturate: 180, hueRotate: 190, blur: 0, sepia: 0, grayscale: 0 };
     } else if (preset === 'noir') {
-      layer.filters = { brightness: 95, contrast: 160, saturate: 0, hueRotate: 0, blur: 0, sepia: 0, grayscale: 100, invert: 0 };
+      layer.filters = { brightness: 95, contrast: 160, saturate: 0, hueRotate: 0, blur: 0, sepia: 0, grayscale: 100 };
     } else if (preset === 'vintage') {
-      layer.filters = { brightness: 90, contrast: 110, saturate: 85, hueRotate: 15, blur: 0, sepia: 60, grayscale: 0, invert: 0 };
+      layer.filters = { brightness: 90, contrast: 110, saturate: 85, hueRotate: 15, blur: 0, sepia: 60, grayscale: 0 };
     } else if (preset === 'vibrant') {
-      layer.filters = { brightness: 110, contrast: 130, saturate: 200, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0, invert: 0 };
+      layer.filters = { brightness: 110, contrast: 130, saturate: 200, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0 };
     }
   }
 
-  getPointerPos(e) {
+  getPointerPos(clientX, clientY) {
     const rect = this.canvas.getBoundingClientRect();
     const scaleX = this.width / rect.width;
     const scaleY = this.height / rect.height;
     return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
     };
   }
 
-  onMouseDown(e) {
-    const pos = this.getPointerPos(e);
+  onPointerDown(e) {
+    const pos = this.getPointerPos(e.clientX, e.clientY);
     this.dragStart = pos;
 
     if (this.activeTool === 'select') {
-      // Check resize handles of active layer first
+      // 1. Check resize handle
       const activeLayer = this.getActiveLayer();
       if (activeLayer) {
         const handle = this.hitTestHandles(pos, activeLayer);
@@ -259,16 +294,35 @@ class DesignStudio {
         }
       }
 
-      // Hit test layers (from top to bottom)
+      // 2. Check layer selection
       const hit = this.hitTestLayers(pos);
       if (hit) {
         this.activeLayerId = hit.id;
         this.isDragging = true;
         this.layerStart = { x: hit.x, y: hit.y, w: hit.width, h: hit.height };
+        document.querySelector('.inspector-tab-btn[data-tab="properties"]')?.click();
       } else {
         this.activeLayerId = null;
       }
       this.updateInspectorUI();
+      this.render();
+    } else if (this.activeTool === 'brush') {
+      this.isDrawing = true;
+      const brushLayer = {
+        id: `layer-${Date.now()}`,
+        name: 'Fırça Çizimi',
+        type: 'brush',
+        visible: true,
+        locked: false,
+        opacity: this.brushStyle === 'highlighter' ? 0.4 : 1.0,
+        stroke: this.brushColor,
+        strokeWidth: this.brushSize,
+        brushStyle: this.brushStyle,
+        points: [pos],
+        x: 0, y: 0, width: this.width, height: this.height, rotation: 0
+      };
+      this.layers.push(brushLayer);
+      this.activeLayerId = brushLayer.id;
       this.render();
     } else if (['rect', 'circle', 'triangle', 'star', 'arrow'].includes(this.activeTool)) {
       this.createShapeLayer(this.activeTool, pos.x, pos.y);
@@ -278,28 +332,11 @@ class DesignStudio {
       this.createTextLayer(pos.x, pos.y);
       this.activeTool = 'select';
       document.querySelector('.tool-btn[data-tool="select"]')?.click();
-    } else if (this.activeTool === 'brush') {
-      this.isDrawing = true;
-      const brushLayer = {
-        id: `layer-${Date.now()}`,
-        name: 'Fırça Çizimi',
-        type: 'brush',
-        visible: true,
-        locked: false,
-        opacity: 1.0,
-        stroke: this.currentFill,
-        strokeWidth: 4,
-        points: [pos],
-        x: 0, y: 0, width: this.width, height: this.height, rotation: 0
-      };
-      this.layers.push(brushLayer);
-      this.activeLayerId = brushLayer.id;
-      this.render();
     }
   }
 
-  onMouseMove(e) {
-    const pos = this.getPointerPos(e);
+  onPointerMove(e) {
+    const pos = this.getPointerPos(e.clientX, e.clientY);
     const dx = pos.x - this.dragStart.x;
     const dy = pos.y - this.dragStart.y;
 
@@ -330,7 +367,7 @@ class DesignStudio {
     }
   }
 
-  onMouseUp() {
+  onPointerUp() {
     if (this.isDragging || this.isResizing || this.isDrawing) {
       this.isDragging = false;
       this.isResizing = false;
@@ -340,23 +377,58 @@ class DesignStudio {
     }
   }
 
+  onTouchStart(e) {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      this.onPointerDown({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+    }
+  }
+
+  onTouchMove(e) {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      this.onPointerMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+    }
+  }
+
+  hitTestLayers(pos) {
+    for (let i = this.layers.length - 1; i >= 0; i--) {
+      const layer = this.layers[i];
+      if (!layer.visible) continue;
+      if (layer.type === 'brush') continue; // brushes take whole canvas
+      if (
+        pos.x >= layer.x &&
+        pos.x <= layer.x + layer.width &&
+        pos.y >= layer.y &&
+        pos.y <= layer.y + layer.height
+      ) {
+        return layer;
+      }
+    }
+    return null;
+  }
+
+  hitTestHandles(pos, layer) {
+    const handleSize = 16;
+    const brX = layer.x + layer.width;
+    const brY = layer.y + layer.height;
+    if (Math.abs(pos.x - brX) <= handleSize && Math.abs(pos.y - brY) <= handleSize) {
+      return 'br';
+    }
+    return null;
+  }
+
   createShapeLayer(type, x, y) {
     const newLayer = {
       id: `layer-${Date.now()}`,
       name: `${type.toUpperCase()} Şekli`,
       type: type,
-      x: x - 60,
-      y: y - 60,
-      width: 120,
-      height: 120,
-      rotation: 0,
-      visible: true,
-      locked: false,
-      opacity: 1.0,
-      fill: this.currentFill,
-      stroke: this.currentStroke,
-      strokeWidth: this.currentStrokeWidth,
-      shadow: { color: 'rgba(0,0,0,0.3)', blur: 10, offsetX: 0, offsetY: 4 }
+      x: x - 60, y: y - 60,
+      width: 120, height: 120, rotation: 0,
+      visible: true, locked: false, opacity: 1.0,
+      fill: this.brushColor || '#00f2fe',
+      stroke: '#0f172a', strokeWidth: 0,
+      shadow: { color: 'rgba(0,0,0,0.4)', blur: 12, offsetX: 0, offsetY: 4 }
     };
     this.layers.push(newLayer);
     this.activeLayerId = newLayer.id;
@@ -370,25 +442,129 @@ class DesignStudio {
       id: `layer-${Date.now()}`,
       name: 'Metin Katmanı',
       type: 'text',
-      text: 'YENİ BAŞLIK',
+      text: 'YENİ METİN',
       fontFamily: "'Cinzel', serif",
       fontSize: 48,
-      fontWeight: '700',
       letterSpacing: 2,
-      x: x - 100,
-      y: y - 30,
-      width: 260,
-      height: 60,
-      rotation: 0,
-      visible: true,
-      locked: false,
-      opacity: 1.0,
-      fill: '#f59e0b',
-      stroke: '',
-      strokeWidth: 0
+      x: x - 100, y: y - 30,
+      width: 260, height: 60, rotation: 0,
+      visible: true, locked: false, opacity: 1.0,
+      fill: '#f59e0b', stroke: '', strokeWidth: 0
     };
     this.layers.push(newLayer);
     this.activeLayerId = newLayer.id;
+    this.updateInspectorUI();
+    this.render();
+    this.saveState();
+  }
+
+  // Pre-made Element Creators
+  addGoldBadge() {
+    const layer = {
+      id: `layer-${Date.now()}`,
+      name: 'Altın Rozet',
+      type: 'star',
+      x: this.width / 2 - 60, y: this.height / 2 - 60,
+      width: 120, height: 120, rotation: 0,
+      visible: true, locked: false, opacity: 1.0,
+      fill: '#f59e0b', stroke: '#fff', strokeWidth: 2,
+      shadow: { color: 'rgba(245, 158, 11, 0.4)', blur: 20, offsetX: 0, offsetY: 0 }
+    };
+    this.layers.push(layer);
+    this.activeLayerId = layer.id;
+    this.updateInspectorUI();
+    this.render();
+    this.saveState();
+  }
+
+  addLuxuryTitle() {
+    const layer = {
+      id: `layer-${Date.now()}`,
+      name: 'Lüks Başlık',
+      type: 'text',
+      text: 'BİTİGEY DİJİTAL SANAT',
+      fontFamily: "'Cinzel', serif",
+      fontSize: 52,
+      letterSpacing: 3,
+      x: 100, y: 200, width: 600, height: 70, rotation: 0,
+      visible: true, locked: false, opacity: 1.0,
+      fill: '#f59e0b'
+    };
+    this.layers.push(layer);
+    this.activeLayerId = layer.id;
+    this.updateInspectorUI();
+    this.render();
+    this.saveState();
+  }
+
+  addNeonCard() {
+    const layer = {
+      id: `layer-${Date.now()}`,
+      name: 'Neon Kart',
+      type: 'rect',
+      x: 100, y: 150, width: 600, height: 400, rotation: 0,
+      visible: true, locked: false, opacity: 0.9,
+      fill: '#0f172a', stroke: '#00f2fe', strokeWidth: 3,
+      shadow: { color: 'rgba(0, 242, 254, 0.35)', blur: 25, offsetX: 0, offsetY: 8 }
+    };
+    this.layers.push(layer);
+    this.activeLayerId = layer.id;
+    this.updateInspectorUI();
+    this.render();
+    this.saveState();
+  }
+
+  addQuoteBox() {
+    const layer = {
+      id: `layer-${Date.now()}`,
+      name: 'Edebi Alıntı',
+      type: 'text',
+      text: '"Söz, insanın zamana bıraktığı en soylu imzadır."',
+      fontFamily: "'Playfair Display', serif",
+      fontSize: 28,
+      letterSpacing: 1,
+      x: 120, y: 340, width: 560, height: 80, rotation: 0,
+      visible: true, locked: false, opacity: 1.0,
+      fill: '#f8fafc'
+    };
+    this.layers.push(layer);
+    this.activeLayerId = layer.id;
+    this.updateInspectorUI();
+    this.render();
+    this.saveState();
+  }
+
+  addCallout() {
+    const layer = {
+      id: `layer-${Date.now()}`,
+      name: 'Not Kartı',
+      type: 'rect',
+      x: 150, y: 300, width: 300, height: 140, rotation: 0,
+      visible: true, locked: false, opacity: 0.95,
+      fill: '#1e293b', stroke: '#e2e8f0', strokeWidth: 1,
+      shadow: { color: 'rgba(0,0,0,0.5)', blur: 15, offsetX: 0, offsetY: 4 }
+    };
+    this.layers.push(layer);
+    this.activeLayerId = layer.id;
+    this.updateInspectorUI();
+    this.render();
+    this.saveState();
+  }
+
+  addAuthorTag() {
+    const layer = {
+      id: `layer-${Date.now()}`,
+      name: 'Yazar İmzası',
+      type: 'text',
+      text: 'Tunahan Haksever',
+      fontFamily: "'Pacifico', cursive",
+      fontSize: 32,
+      x: 120, y: 640, width: 300, height: 50, rotation: 0,
+      visible: true, locked: false, opacity: 1.0,
+      fill: '#00f2fe'
+    };
+    this.layers.push(layer);
+    this.activeLayerId = layer.id;
     this.updateInspectorUI();
     this.render();
     this.saveState();
@@ -403,26 +579,19 @@ class DesignStudio {
       const img = new Image();
       img.onload = () => {
         const aspect = img.width / img.height;
-        let w = Math.min(img.width, 400);
+        let w = Math.min(img.width, 500);
         let h = w / aspect;
 
         const newLayer = {
           id: `layer-${Date.now()}`,
-          name: `Görsel (${file.name.substring(0, 10)})`,
+          name: `Fotoğraf (${file.name.substring(0, 12)})`,
           type: 'image',
           imageSrc: event.target.result,
-          x: (this.width - w) / 2,
-          y: (this.height - h) / 2,
-          width: Math.round(w),
-          height: Math.round(h),
-          rotation: 0,
-          visible: true,
-          locked: false,
-          opacity: 1.0,
-          fill: '',
-          stroke: '',
-          strokeWidth: 0,
-          filters: { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0, invert: 0 }
+          x: (this.width - w) / 2, y: (this.height - h) / 2,
+          width: Math.round(w), height: Math.round(h), rotation: 0,
+          visible: true, locked: false, opacity: 1.0,
+          fill: '', stroke: '', strokeWidth: 0,
+          filters: { brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, sepia: 0, grayscale: 0 }
         };
         this.layers.push(newLayer);
         this.activeLayerId = newLayer.id;
@@ -433,32 +602,6 @@ class DesignStudio {
       img.src = event.target.result;
     };
     reader.readAsDataURL(file);
-  }
-
-  hitTestLayers(pos) {
-    for (let i = this.layers.length - 1; i >= 0; i--) {
-      const layer = this.layers[i];
-      if (!layer.visible) continue;
-      if (
-        pos.x >= layer.x &&
-        pos.x <= layer.x + layer.width &&
-        pos.y >= layer.y &&
-        pos.y <= layer.y + layer.height
-      ) {
-        return layer;
-      }
-    }
-    return null;
-  }
-
-  hitTestHandles(pos, layer) {
-    const handleSize = 12;
-    const brX = layer.x + layer.width;
-    const brY = layer.y + layer.height;
-    if (Math.abs(pos.x - brX) <= handleSize && Math.abs(pos.y - brY) <= handleSize) {
-      return 'br';
-    }
-    return null;
   }
 
   getActiveLayer() {
@@ -473,27 +616,14 @@ class DesignStudio {
     this.saveState();
   }
 
-  moveLayerOrder(id, dir) {
-    const idx = this.layers.findIndex(l => l.id === id);
-    if (idx === -1) return;
-    const targetIdx = idx + dir;
-    if (targetIdx >= 0 && targetIdx < this.layers.length) {
-      const item = this.layers.splice(idx, 1)[0];
-      this.layers.splice(targetIdx, 0, item);
-      this.updateInspectorUI();
-      this.render();
-      this.saveState();
-    }
-  }
-
   updateInspectorUI() {
-    // Render Layer List Tree
+    // Layers List
     const listContainer = document.getElementById('layers-tree-list');
     if (listContainer) {
-      listContainer.innerHTML = this.layers.map((layer, idx) => `
+      listContainer.innerHTML = this.layers.map((layer) => `
         <div class="layer-item ${layer.id === this.activeLayerId ? 'selected' : ''}" data-layer-id="${layer.id}">
           <span style="display:flex; align-items:center; gap:6px;">
-            <span>${layer.type === 'text' ? '🔤' : (layer.type === 'image' ? '🖼️' : '📐')}</span>
+            <span>${layer.type === 'text' ? '🔤' : (layer.type === 'image' ? '🖼️' : (layer.type === 'brush' ? '🖌️' : '📐'))}</span>
             <span>${layer.name}</span>
           </span>
           <div class="layer-actions">
@@ -525,23 +655,25 @@ class DesignStudio {
       });
     }
 
-    // Update Property Fields
+    // Property Inputs
     const active = this.getActiveLayer();
     if (active) {
       document.getElementById('prop-x').value = active.x;
       document.getElementById('prop-y').value = active.y;
       document.getElementById('prop-w').value = active.width;
       document.getElementById('prop-h').value = active.height;
-      document.getElementById('prop-rotation').value = active.rotation || 0;
       document.getElementById('prop-opacity').value = active.opacity ?? 1.0;
-      document.getElementById('prop-fill-color').value = active.fill || '#ffffff';
+      document.getElementById('prop-fill-color').value = active.fill || '#00f2fe';
       document.getElementById('prop-stroke-color').value = active.stroke || '#000000';
       document.getElementById('prop-stroke-width').value = active.strokeWidth || 0;
 
       if (active.type === 'text') {
+        document.getElementById('typography-controls-box').style.display = 'flex';
         document.getElementById('prop-text-content').value = active.text || '';
         document.getElementById('prop-font-family').value = active.fontFamily || "'Cinzel', serif";
         document.getElementById('prop-font-size').value = active.fontSize || 36;
+      } else {
+        document.getElementById('typography-controls-box').style.display = 'none';
       }
 
       if (active.filters) {
@@ -556,27 +688,20 @@ class DesignStudio {
   render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    // Canvas Background
     if (this.bgColor) {
       this.ctx.fillStyle = this.bgColor;
       this.ctx.fillRect(0, 0, this.width, this.height);
     }
 
-    // Render Layers
     this.layers.forEach(layer => {
       if (!layer.visible) return;
 
       this.ctx.save();
       this.ctx.globalAlpha = layer.opacity ?? 1.0;
 
-      // Transform
       const cx = layer.x + layer.width / 2;
       const cy = layer.y + layer.height / 2;
-      this.ctx.translate(cx, cy);
-      if (layer.rotation) this.ctx.rotate((layer.rotation * Math.PI) / 180);
-      this.ctx.translate(-cx, -cy);
 
-      // Shadow
       if (layer.shadow) {
         this.ctx.shadowColor = layer.shadow.color;
         this.ctx.shadowBlur = layer.shadow.blur;
@@ -584,7 +709,6 @@ class DesignStudio {
         this.ctx.shadowOffsetY = layer.shadow.offsetY;
       }
 
-      // Draw Shape Type
       if (layer.type === 'rect') {
         this.ctx.fillStyle = layer.fill;
         this.ctx.fillRect(layer.x, layer.y, layer.width, layer.height);
@@ -611,9 +735,11 @@ class DesignStudio {
         this.ctx.closePath();
         this.ctx.fillStyle = layer.fill;
         this.ctx.fill();
+      } else if (layer.type === 'star') {
+        this.drawStar(cx, cy, 5, layer.width / 2, layer.width / 4, layer.fill, layer.stroke, layer.strokeWidth);
       } else if (layer.type === 'text') {
         this.ctx.fillStyle = layer.fill;
-        this.ctx.font = `${layer.fontWeight || '700'} ${layer.fontSize || 36}px ${layer.fontFamily || "'Outfit', sans-serif"}`;
+        this.ctx.font = `${layer.fontSize || 36}px ${layer.fontFamily || "'Outfit', sans-serif"}`;
         this.ctx.textBaseline = 'top';
         this.ctx.fillText(layer.text || '', layer.x, layer.y);
       } else if (layer.type === 'image' && layer.imageSrc) {
@@ -621,7 +747,7 @@ class DesignStudio {
         img.src = layer.imageSrc;
         if (layer.filters) {
           const f = layer.filters;
-          this.ctx.filter = `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturate}%) hue-rotate(${f.hueRotate}deg) blur(${f.blur}px) sepia(${f.sepia}%) grayscale(${f.grayscale}%)`;
+          this.ctx.filter = `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturate}%) hue-rotate(${f.hueRotate}deg) blur(${f.blur || 0}px) sepia(${f.sepia || 0}%) grayscale(${f.grayscale || 0}%)`;
         }
         this.ctx.drawImage(img, layer.x, layer.y, layer.width, layer.height);
       } else if (layer.type === 'brush' && layer.points) {
@@ -630,6 +756,10 @@ class DesignStudio {
         this.ctx.lineWidth = layer.strokeWidth;
         this.ctx.lineCap = 'round';
         this.ctx.lineJoin = 'round';
+        if (layer.brushStyle === 'neon') {
+          this.ctx.shadowColor = layer.stroke;
+          this.ctx.shadowBlur = 15;
+        }
         layer.points.forEach((p, idx) => {
           if (idx === 0) this.ctx.moveTo(p.x, p.y);
           else this.ctx.lineTo(p.x, p.y);
@@ -640,25 +770,54 @@ class DesignStudio {
       this.ctx.restore();
     });
 
-    // Draw Selection Box & Handles for Active Layer
+    // Selection gizmo
     const active = this.getActiveLayer();
-    if (active && this.activeTool === 'select') {
+    if (active && this.activeTool === 'select' && active.type !== 'brush') {
       this.ctx.save();
       this.ctx.strokeStyle = '#00f2fe';
-      this.ctx.lineWidth = 1.5;
+      this.ctx.lineWidth = 2;
       this.ctx.setLineDash([4, 4]);
       this.ctx.strokeRect(active.x - 2, active.y - 2, active.width + 4, active.height + 4);
       this.ctx.setLineDash([]);
 
       // Resize Handle (Bottom-Right)
       this.ctx.fillStyle = '#00f2fe';
-      this.ctx.fillRect(active.x + active.width - 4, active.y + active.height - 4, 8, 8);
+      this.ctx.fillRect(active.x + active.width - 6, active.y + active.height - 6, 12, 12);
       this.ctx.restore();
     }
   }
 
+  drawStar(cx, cy, spikes, outerRadius, innerRadius, fill, stroke, strokeWidth) {
+    let rot = Math.PI / 2 * 3;
+    let x = cx;
+    let y = cy;
+    const step = Math.PI / spikes;
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx, cy - outerRadius);
+    for (let i = 0; i < spikes; i++) {
+      x = cx + Math.cos(rot) * outerRadius;
+      y = cy + Math.sin(rot) * outerRadius;
+      this.ctx.lineTo(x, y);
+      rot += step;
+
+      x = cx + Math.cos(rot) * innerRadius;
+      y = cy + Math.sin(rot) * innerRadius;
+      this.ctx.lineTo(x, y);
+      rot += step;
+    }
+    this.ctx.lineTo(cx, cy - outerRadius);
+    this.ctx.closePath();
+    this.ctx.fillStyle = fill;
+    this.ctx.fill();
+    if (strokeWidth > 0) {
+      this.ctx.strokeStyle = stroke;
+      this.ctx.lineWidth = strokeWidth;
+      this.ctx.stroke();
+    }
+  }
+
   saveState() {
-    // History stack push
     const state = JSON.stringify({
       width: this.width,
       height: this.height,
@@ -703,6 +862,7 @@ class DesignStudio {
     link.download = `bitigey-design-${Date.now()}.${type}`;
     link.href = this.canvas.toDataURL(`image/${type}`, 0.95);
     link.click();
+    document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
   }
 
   exportSVG() {
@@ -725,6 +885,7 @@ class DesignStudio {
     link.download = `bitigey-vector-${Date.now()}.svg`;
     link.href = URL.createObjectURL(blob);
     link.click();
+    document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
   }
 
   exportJSON() {
@@ -743,6 +904,7 @@ class DesignStudio {
     link.download = 'project.bitigey.json';
     link.href = URL.createObjectURL(blob);
     link.click();
+    document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
   }
 
   importJSON(e) {
@@ -754,7 +916,7 @@ class DesignStudio {
         const data = JSON.parse(event.target.result);
         this.width = data.canvasWidth || 800;
         this.height = data.canvasHeight || 800;
-        this.bgColor = data.backgroundColor || '#ffffff';
+        this.bgColor = data.backgroundColor || '#0a0d14';
         this.layers = data.layers || [];
         this.resizeCanvas(this.width, this.height);
         this.updateInspectorUI();
@@ -770,35 +932,33 @@ class DesignStudio {
   loadSampleDesign() {
     this.layers = [
       {
-        id: 'bg-gradient',
+        id: 'bg-card',
         name: 'Arkaplan Kartı',
         type: 'rect',
-        x: 60, y: 60, width: 680, height: 680, rotation: 0,
+        x: 80, y: 80, width: 640, height: 640, rotation: 0,
         visible: true, locked: false, opacity: 1.0,
-        fill: '#0f172a', stroke: '#38bdf8', strokeWidth: 2,
-        shadow: { color: 'rgba(0,0,0,0.5)', blur: 30, offsetX: 0, offsetY: 10 }
+        fill: '#0f172a', stroke: '#00f2fe', strokeWidth: 2,
+        shadow: { color: 'rgba(0, 242, 254, 0.25)', blur: 25, offsetX: 0, offsetY: 8 }
       },
       {
         id: 'brand-title',
-        name: 'Ana Başlık',
+        name: 'Lüks Başlık',
         type: 'text',
         text: 'BİTİGEY DİJİTAL SANAT',
         fontFamily: "'Cinzel', serif",
-        fontSize: 42,
-        fontWeight: '800',
-        x: 120, y: 160, width: 560, height: 60, rotation: 0,
+        fontSize: 44,
+        x: 120, y: 180, width: 560, height: 60, rotation: 0,
         visible: true, locked: false, opacity: 1.0,
         fill: '#f59e0b'
       },
       {
         id: 'subtitle',
-        name: 'Açıklama Metni',
+        name: 'Açıklama',
         type: 'text',
         text: 'Özgür Edebi Üretim & Yeni Nesil Vektör Tasarımı',
         fontFamily: "'Outfit', sans-serif",
         fontSize: 20,
-        fontWeight: '500',
-        x: 120, y: 240, width: 560, height: 40, rotation: 0,
+        x: 120, y: 260, width: 560, height: 40, rotation: 0,
         visible: true, locked: false, opacity: 0.85,
         fill: '#cbd5e1'
       },
@@ -807,9 +967,8 @@ class DesignStudio {
         name: 'Yazar İmzası',
         type: 'text',
         text: 'Tunahan Haksever',
-        fontFamily: "'Playfair Display', serif",
-        fontSize: 24,
-        fontWeight: '700',
+        fontFamily: "'Pacifico', cursive",
+        fontSize: 28,
         x: 120, y: 620, width: 300, height: 40, rotation: 0,
         visible: true, locked: false, opacity: 1.0,
         fill: '#00f2fe'
@@ -837,7 +996,15 @@ class DesignStudio {
       this.resizeCanvas(1280, 720);
       this.bgColor = '#090a0f';
       this.layers = [
-        { id: '1', name: 'Thumb Title', type: 'text', text: 'SÜPER HIZLI TASARIM!', fontFamily: "'Outfit', sans-serif", fontSize: 72, fontWeight: '900', x: 80, y: 280, width: 1000, height: 100, rotation: 0, visible: true, locked: false, opacity: 1, fill: '#f59e0b' }
+        { id: '1', name: 'Thumb Title', type: 'text', text: 'SÜPER HIZLI TASARIM!', fontFamily: "'Outfit', sans-serif", fontSize: 72, x: 80, y: 280, width: 1000, height: 100, rotation: 0, visible: true, locked: false, opacity: 1, fill: '#f59e0b' }
+      ];
+    } else if (name === 'book-cover') {
+      this.resizeCanvas(800, 1200);
+      this.bgColor = '#080a12';
+      this.layers = [
+        { id: '1', name: 'Cover Frame', type: 'rect', x: 50, y: 50, width: 700, height: 1100, rotation: 0, visible: true, locked: false, opacity: 1, fill: '#0f172a', stroke: '#f59e0b', strokeWidth: 3 },
+        { id: '2', name: 'Book Title', type: 'text', text: 'MÂSİVÂ YOLCULUĞU', fontFamily: "'Cinzel', serif", fontSize: 48, x: 100, y: 260, width: 600, height: 70, rotation: 0, visible: true, locked: false, opacity: 1, fill: '#f59e0b' },
+        { id: '3', name: 'Book Author', type: 'text', text: 'Tunahan Haksever', fontFamily: "'Playfair Display', serif", fontSize: 26, x: 100, y: 980, width: 400, height: 50, rotation: 0, visible: true, locked: false, opacity: 0.9, fill: '#00f2fe' }
       ];
     }
     this.updateInspectorUI();
@@ -846,7 +1013,6 @@ class DesignStudio {
   }
 }
 
-// Bootstrap
 window.addEventListener('DOMContentLoaded', () => {
   window.studio = new DesignStudio();
 });

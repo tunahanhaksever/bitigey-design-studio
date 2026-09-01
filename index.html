@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Bitigey Design Studio — Next-Gen Multi-Layer Graphic Editor | Tunahan Haksever</title>
-  <meta name="description" content="Tunahan Haksever tarafından geliştirilen; çok katmanlı vektör çizim, lüks tipografi, görsel filtreleme ve zengin şablon motoru sunan yeni nesil grafik tasarım stüdyosu.">
-  <meta name="keywords" content="Tunahan Haksever, tunahanhaksever, bitigey, bitigey design studio, grafik tasarım stüdyosu, online banner yapma, katmanlı vektör editörü, figma alternatifi web, tipografi editörü, fotoğraf düzenleyici, svg dışa aktar">
+  <title>Bitigey Design Studio — Next-Gen Multi-Layer Graphic & Drawing Editor | Tunahan Haksever</title>
+  <meta name="description" content="Tunahan Haksever tarafından geliştirilen; çok katmanlı vektör çizim, resim üzerine boyama, lüks tipografi, görsel filtreleme ve proje dışa aktarma motoru sunan yeni nesil grafik tasarım stüdyosu.">
+  <meta name="keywords" content="Tunahan Haksever, tunahanhaksever, bitigey, bitigey design studio, grafik tasarım stüdyosu, online banner yapma, katmanlı vektör editörü, resim boyama, tipografi editörü, fotoğraf düzenleyici, svg dışa aktar">
   <meta name="author" content="Tunahan Haksever">
   <meta name="publisher" content="Tunahan Haksever">
   <meta name="robots" content="index, follow">
@@ -15,7 +15,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://tunahanhaksever.github.io/bitigey-design-studio/">
   <meta property="og:title" content="Bitigey Design Studio — Tunahan Haksever">
-  <meta property="og:description" content="Çok katmanlı vektör çizim, tipografi stüdyosu, filtre motoru ve zengin şablonlar.">
+  <meta property="og:description" content="Çok katmanlı vektör çizim, resim boyama, tipografi stüdyosu, filtre motoru ve zengin şablonlar.">
   <meta property="og:site_name" content="Bitigey Design Studio">
   <meta property="og:locale" content="tr_TR">
 
@@ -51,7 +51,7 @@
         "creator": {
           "@id": "https://github.com/tunahanhaksever#person"
         },
-        "description": "Çok katmanlı vektör düzenleme, tipografi stüdyosu, profesyonel renk filtreleri ve hazır şablon motoru."
+        "description": "Çok katmanlı vektör düzenleme, resim boyama, tipografi stüdyosu, profesyonel renk filtreleri ve hazır şablon motoru."
       }
     ]
   }
@@ -60,7 +60,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Pacifico&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -71,7 +71,7 @@
     <div class="brand-section">
       <div class="brand-icon">✦</div>
       <div class="brand-title">BİTİGEY DESIGN STUDIO</div>
-      <a href="https://github.com/tunahanhaksever" target="_blank" class="author-pill" style="margin-left: 8px;">
+      <a href="https://github.com/tunahanhaksever" target="_blank" class="author-pill">
         <span>👨‍💻 Tunahan Haksever</span>
       </a>
     </div>
@@ -81,13 +81,13 @@
       <button class="header-btn" id="btn-redo" title="İleri Al (Ctrl+Y)">↷ İleri</button>
       <div style="width: 1px; height: 16px; background: var(--border-subtle); margin: 0 4px;"></div>
       <button class="header-btn" id="btn-open-templates">📐 Şablonlar</button>
-      <button class="header-btn" id="btn-import-json-trigger">📂 Proje Yükle</button>
+      <button class="header-btn" id="btn-import-json-trigger">📂 Projeyi Aç (.json)</button>
       <input type="file" id="json-import-input" accept=".json" style="display: none;">
     </div>
 
     <div class="brand-section">
       <span id="canvas-dimensions-display" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 8px;">800 × 800 px</span>
-      <button class="header-btn primary" id="btn-open-export">💾 Dışa Aktar</button>
+      <button class="header-btn primary" id="btn-open-export">💾 Projeyi İndir</button>
     </div>
   </header>
 
@@ -96,18 +96,18 @@
     
     <!-- 1. LEFT TOOLBAR -->
     <aside class="left-toolbar">
-      <button class="tool-btn active" data-tool="select" title="Seçim & Taşıma (V)">↖️</button>
+      <button class="tool-btn active" data-tool="select" title="Seçim & Sürükle-Bırak (V)">↖️</button>
       <div class="toolbar-divider"></div>
-      <button class="tool-btn" data-tool="rect" title="Dikdörtgen Ekle (R)">⬛</button>
-      <button class="tool-btn" data-tool="circle" title="Çember / Daire Ekle (O)">⚪</button>
-      <button class="tool-btn" data-tool="triangle" title="Üçgen Ekle">▲</button>
-      <button class="tool-btn" data-tool="star" title="Yıldız Ekle">★</button>
-      <button class="tool-btn" data-tool="arrow" title="Ok Ekle">➔</button>
-      <div class="toolbar-divider"></div>
+      <button class="tool-btn" data-tool="brush" title="Serbest Fırça & Boyama (B)">🖌️</button>
       <button class="tool-btn" data-tool="text" title="Metin / Tipografi (T)">🔤</button>
-      <button class="tool-btn" data-tool="brush" title="Serbest Fırça (B)">🖌️</button>
-      <button class="tool-btn" id="btn-tool-upload" title="Görsel Yükle">🖼️</button>
+      <button class="tool-btn" data-tool="rect" title="Dikdörtgen Ekle">⬛</button>
+      <button class="tool-btn" data-tool="circle" title="Daire / Elips Ekle">⚪</button>
+      <button class="tool-btn" data-tool="star" title="Yıldız / Rozet Ekle">★</button>
+      <button class="tool-btn" data-tool="arrow" title="Ok Çiz">➔</button>
+      <div class="toolbar-divider"></div>
+      <button class="tool-btn" id="btn-tool-upload" title="Görsel Yükle & Boya">🖼️</button>
       <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
+      <button class="tool-btn" id="btn-delete-active" title="Seçiliyi Sil (Del)" style="color: var(--accent-rose); margin-top: auto;">🗑️</button>
     </aside>
 
     <!-- 2. CENTER CANVAS STAGE -->
@@ -121,16 +121,59 @@
     <aside class="right-inspector">
       <!-- Tabs -->
       <div class="inspector-tabs">
-        <button class="inspector-tab-btn active" data-tab="properties">Özellikler</button>
+        <button class="inspector-tab-btn active" data-tab="elements">Ekle</button>
+        <button class="inspector-tab-btn" data-tab="properties">Özellikler</button>
+        <button class="inspector-tab-btn" data-tab="brush">Boyama</button>
         <button class="inspector-tab-btn" data-tab="layers">Katmanlar</button>
-        <button class="inspector-tab-btn" data-tab="typography">Tipografi</button>
         <button class="inspector-tab-btn" data-tab="filters">Filtreler</button>
       </div>
 
-      <!-- Tab Content: Properties -->
-      <div class="inspector-content inspector-tab-content" id="tab-content-properties">
+      <!-- Tab 1: Elements Add Drawer -->
+      <div class="inspector-content inspector-tab-content" id="tab-content-elements">
         <div class="control-group">
-          <label class="control-label">Tuval Arkaplanı</label>
+          <label class="control-label">Hazır Eleman Ekle</label>
+          <div class="elements-grid">
+            <div class="element-add-card" id="btn-add-gold-badge">
+              <span class="el-icon">⭐</span>
+              <span class="el-name">Altın Rozet</span>
+            </div>
+            <div class="element-add-card" id="btn-add-luxury-title">
+              <span class="el-icon">👑</span>
+              <span class="el-name">Lüks Başlık</span>
+            </div>
+            <div class="element-add-card" id="btn-add-neon-card">
+              <span class="el-icon">🌌</span>
+              <span class="el-name">Neon Kart</span>
+            </div>
+            <div class="element-add-card" id="btn-add-quote-box">
+              <span class="el-icon">📜</span>
+              <span class="el-name">Edebi Alıntı</span>
+            </div>
+            <div class="element-add-card" id="btn-add-callout">
+              <span class="el-icon">💬</span>
+              <span class="el-name">Balon / Not</span>
+            </div>
+            <div class="element-add-card" id="btn-add-author-tag">
+              <span class="el-icon">✍️</span>
+              <span class="el-name">Yazar İmzası</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group" style="margin-top: 10px;">
+          <label class="control-label">Tuval Boyutları</label>
+          <div class="control-row">
+            <button class="header-btn" id="preset-1080x1080" style="flex:1;">1:1 Kare</button>
+            <button class="header-btn" id="preset-1080x1920" style="flex:1;">9:16 Story</button>
+            <button class="header-btn" id="preset-1280x720" style="flex:1;">16:9 Banner</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Properties -->
+      <div class="inspector-content inspector-tab-content" id="tab-content-properties" style="display: none;">
+        <div class="control-group">
+          <label class="control-label">Tuval Arkaplan Rengi</label>
           <div class="color-picker-box">
             <input type="color" id="canvas-bg-color" value="#ffffff" class="color-swatch-input">
             <span style="font-size: 0.8rem; color: var(--text-secondary);">Arkaplan Rengi</span>
@@ -138,22 +181,14 @@
         </div>
 
         <div class="control-group">
-          <label class="control-label">Konum & Boyut (X, Y, W, H)</label>
+          <label class="control-label">Seçili Nesne Konumu & Boyutu</label>
           <div class="control-row">
             <input type="number" id="prop-x" class="control-input" placeholder="X">
             <input type="number" id="prop-y" class="control-input" placeholder="Y">
           </div>
           <div class="control-row" style="margin-top: 6px;">
-            <input type="number" id="prop-w" class="control-input" placeholder="W">
-            <input type="number" id="prop-h" class="control-input" placeholder="H">
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label">Döndürme & Opaklık</label>
-          <div class="control-row">
-            <input type="number" id="prop-rotation" class="control-input" placeholder="Açı (°)">
-            <input type="number" id="prop-opacity" class="control-input" step="0.1" min="0" max="1" placeholder="Opaklık">
+            <input type="number" id="prop-w" class="control-input" placeholder="Genişlik">
+            <input type="number" id="prop-h" class="control-input" placeholder="Yükseklik">
           </div>
         </div>
 
@@ -165,9 +200,65 @@
             <input type="number" id="prop-stroke-width" class="control-input" placeholder="Kenar (px)">
           </div>
         </div>
+
+        <div class="control-group">
+          <label class="control-label">Opaklık (0 - 1.0)</label>
+          <input type="range" id="prop-opacity" min="0" max="1" step="0.05" value="1" class="control-input" style="padding:0;">
+        </div>
+
+        <!-- Typography Section -->
+        <div class="control-group" id="typography-controls-box">
+          <label class="control-label">Metin & Tipografi</label>
+          <input type="text" id="prop-text-content" class="control-input" placeholder="Metin yazın...">
+          <select id="prop-font-family" class="control-input" style="margin-top: 6px;">
+            <option value="'Cinzel', serif">Cinzel (Lüks & Klasik)</option>
+            <option value="'Playfair Display', serif">Playfair Display (Edebi Serif)</option>
+            <option value="'Outfit', sans-serif">Outfit (Modern Geometrik)</option>
+            <option value="'Inter', sans-serif">Inter (Sade Temiz)</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono (Teknik)</option>
+            <option value="'Pacifico', cursive">Pacifico (El Yazısı)</option>
+          </select>
+          <div class="control-row" style="margin-top: 6px;">
+            <input type="number" id="prop-font-size" class="control-input" placeholder="Font Boyutu">
+            <input type="number" id="prop-letter-spacing" class="control-input" placeholder="Harf Aralığı">
+          </div>
+        </div>
       </div>
 
-      <!-- Tab Content: Layers -->
+      <!-- Tab 3: Brush & Painting -->
+      <div class="inspector-content inspector-tab-content" id="tab-content-brush" style="display: none;">
+        <div class="control-group">
+          <label class="control-label">Fırça / Boya Rengi</label>
+          <div class="color-picker-box">
+            <input type="color" id="brush-color-picker" value="#00f2fe" class="color-swatch-input">
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Boya Rengi Seç</span>
+          </div>
+          <div style="display: flex; gap: 6px; margin-top: 6px;">
+            <button class="header-btn quick-color-btn" data-color="#00f2fe" style="background:#00f2fe; color:#000;">Cyan</button>
+            <button class="header-btn quick-color-btn" data-color="#f59e0b" style="background:#f59e0b; color:#000;">Altın</button>
+            <button class="header-btn quick-color-btn" data-color="#f43f5e" style="background:#f43f5e; color:#fff;">Kırmızı</button>
+            <button class="header-btn quick-color-btn" data-color="#10b981" style="background:#10b981; color:#000;">Yeşil</button>
+            <button class="header-btn quick-color-btn" data-color="#ffffff" style="background:#ffffff; color:#000;">Beyaz</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Fırça Kalınlığı (1 - 60 px)</label>
+          <input type="range" id="brush-size-slider" min="1" max="60" value="6" class="control-input" style="padding:0;">
+          <span id="brush-size-val" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">6 px</span>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Boya Tarzı</label>
+          <select id="brush-style-select" class="control-input">
+            <option value="solid">Düz Fırça (Solid Pen)</option>
+            <option value="neon">Neon Işıltı (Glow)</option>
+            <option value="highlighter">Fosforlu Kalem (Highlighter)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tab 4: Layers -->
       <div class="inspector-content inspector-tab-content" id="tab-content-layers" style="display: none;">
         <div class="control-group">
           <label class="control-label">Katman Hiyerarşisi</label>
@@ -177,43 +268,16 @@
         </div>
       </div>
 
-      <!-- Tab Content: Typography -->
-      <div class="inspector-content inspector-tab-content" id="tab-content-typography" style="display: none;">
-        <div class="control-group">
-          <label class="control-label">Metin İçeriği</label>
-          <input type="text" id="prop-text-content" class="control-input" placeholder="Metin yazın...">
-        </div>
-
-        <div class="control-group">
-          <label class="control-label">Yazı Tipi (Font Family)</label>
-          <select id="prop-font-family" class="control-input">
-            <option value="'Cinzel', serif">Cinzel (Lüks Klasik)</option>
-            <option value="'Playfair Display', serif">Playfair Display (Edebi Serif)</option>
-            <option value="'Outfit', sans-serif">Outfit (Modern Geometrik)</option>
-            <option value="'Inter', sans-serif">Inter (Sade Temiz)</option>
-            <option value="'JetBrains Mono', monospace">JetBrains Mono (Kod/Teknik)</option>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label">Boyut & Harf Aralığı</label>
-          <div class="control-row">
-            <input type="number" id="prop-font-size" class="control-input" placeholder="Font Boyutu">
-            <input type="number" id="prop-letter-spacing" class="control-input" placeholder="Harf Aralığı">
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab Content: Filters -->
+      <!-- Tab 5: Filters -->
       <div class="inspector-content inspector-tab-content" id="tab-content-filters" style="display: none;">
         <div class="control-group">
           <label class="control-label">Hazır Renk Profilleri</label>
           <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-            <button class="eq-pill filter-preset-pill active" data-preset="original">Orijinal</button>
-            <button class="eq-pill filter-preset-pill" data-preset="vibrant">Vibrant</button>
-            <button class="eq-pill filter-preset-pill" data-preset="cyberpunk">Cyberpunk</button>
-            <button class="eq-pill filter-preset-pill" data-preset="noir">Siyah-Beyaz</button>
-            <button class="eq-pill filter-preset-pill" data-preset="vintage">Vintage</button>
+            <button class="header-btn filter-preset-pill active" data-preset="original">Orijinal</button>
+            <button class="header-btn filter-preset-pill" data-preset="vibrant">Vibrant</button>
+            <button class="header-btn filter-preset-pill" data-preset="cyberpunk">Cyberpunk</button>
+            <button class="header-btn filter-preset-pill" data-preset="noir">Siyah-Beyaz</button>
+            <button class="header-btn filter-preset-pill" data-preset="vintage">Vintage</button>
           </div>
         </div>
 
@@ -264,6 +328,11 @@
             <h4 style="font-size: 0.85rem; font-weight: 700;">YouTube Küçük Resim</h4>
             <p style="font-size: 0.72rem; color: var(--text-muted);">1280 × 720 px (16:9)</p>
           </div>
+          <div class="preset-card" data-template="book-cover">
+            <div style="font-size: 1.5rem; margin-bottom: 6px;">📖</div>
+            <h4 style="font-size: 0.85rem; font-weight: 700;">Edebi Kitap Kapağı</h4>
+            <p style="font-size: 0.72rem; color: var(--text-muted);">800 × 1200 px (Dikey)</p>
+          </div>
         </div>
       </div>
     </div>
@@ -273,7 +342,7 @@
   <div class="modal-backdrop" id="export-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 style="font-size: 1rem; font-weight: 800;">💾 Tasarımı Dışa Aktarın</h3>
+        <h3 style="font-size: 1rem; font-weight: 800;">💾 Projeyi ve Görseli İndirin</h3>
         <button class="layer-action-btn modal-close-btn" style="font-size: 1.2rem;">✕</button>
       </div>
       <div class="modal-body">
@@ -281,22 +350,22 @@
           <div class="preset-card" id="btn-export-png">
             <div style="font-size: 1.4rem; color: var(--accent-cyan); font-weight: 800;">PNG</div>
             <h4 style="font-size: 0.85rem; font-weight: 700; margin-top: 4px;">Ultra HD PNG İndir</h4>
-            <p style="font-size: 0.72rem; color: var(--text-muted);">Pikselsiz şeffaf / tam görsel</p>
+            <p style="font-size: 0.72rem; color: var(--text-muted);">Pikselsiz tam görsel</p>
           </div>
           <div class="preset-card" id="btn-export-jpg">
             <div style="font-size: 1.4rem; color: var(--accent-gold); font-weight: 800;">JPG</div>
             <h4 style="font-size: 0.85rem; font-weight: 700; margin-top: 4px;">Optimize JPG İndir</h4>
-            <p style="font-size: 0.72rem; color: var(--text-muted);">Web için hafif ve hızlı</p>
+            <p style="font-size: 0.72rem; color: var(--text-muted);">Web ve baskı için</p>
           </div>
           <div class="preset-card" id="btn-export-svg">
             <div style="font-size: 1.4rem; color: var(--accent-purple); font-weight: 800;">SVG</div>
             <h4 style="font-size: 0.85rem; font-weight: 700; margin-top: 4px;">Vektörel SVG</h4>
-            <p style="font-size: 0.72rem; color: var(--text-muted);">Sonsuz ölçeklenebilir vektör</p>
+            <p style="font-size: 0.72rem; color: var(--text-muted);">Ölçeklenebilir vektör</p>
           </div>
           <div class="preset-card" id="btn-export-json">
             <div style="font-size: 1.4rem; color: var(--accent-emerald); font-weight: 800;">JSON</div>
-            <h4 style="font-size: 0.85rem; font-weight: 700; margin-top: 4px;">Proje Dosyası</h4>
-            <p style="font-size: 0.72rem; color: var(--text-muted);">Sonradan düzenlenebilir proje</p>
+            <h4 style="font-size: 0.85rem; font-weight: 700; margin-top: 4px;">Proje Dosyasını Kaydet</h4>
+            <p style="font-size: 0.72rem; color: var(--text-muted);">Sonradan düzenlenebilir (.json)</p>
           </div>
         </div>
       </div>

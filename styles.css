@@ -1,6 +1,6 @@
 /* ==========================================================================
-   BITIGEY DESIGN STUDIO — MASTER STYLESHEET
-   Crafted by Tunahan Haksever (Obsidian & Linear Inspired Tactile UI)
+   BITIGEY DESIGN STUDIO — REFINED HUMAN-CRAFTED STYLESHEET
+   Crafted by Tunahan Haksever (Linear + Figma inspired tactile dark studio)
    ========================================================================== */
 
 :root {
@@ -98,6 +98,25 @@ body {
   color: #fff;
 }
 
+.author-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.author-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
 .header-center-tools {
   display: flex;
   align-items: center;
@@ -136,6 +155,24 @@ body {
   transform: translateY(-1px);
 }
 
+/* Secondary Quick Floating Bar at top of stage */
+.floating-quick-bar {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(19, 23, 36, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 25;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
 /* -------------------------------------------------------------
    MAIN STUDIO WORKSPACE
    ------------------------------------------------------------- */
@@ -148,7 +185,7 @@ body {
 
 /* 1. LEFT TOOLBAR */
 .left-toolbar {
-  width: 54px;
+  width: 58px;
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border-subtle);
   display: flex;
@@ -160,13 +197,13 @@ body {
 }
 
 .tool-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-xs);
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-secondary);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -184,11 +221,11 @@ body {
   background: var(--bg-active);
   color: var(--accent-cyan);
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
 }
 
 .toolbar-divider {
-  width: 24px;
+  width: 28px;
   height: 1px;
   background: var(--border-subtle);
   margin: 4px 0;
@@ -199,18 +236,18 @@ body {
   flex: 1;
   background: #05060a;
   background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 20px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: auto;
-  padding: 40px;
+  padding: 50px;
 }
 
 .canvas-shadow-frame {
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 70px -10px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.15);
   border-radius: 4px;
   background: #ffffff;
   position: relative;
@@ -219,12 +256,11 @@ body {
 
 #mainDesignCanvas {
   display: block;
-  cursor: crosshair;
 }
 
 /* 3. RIGHT INSPECTOR SIDEBAR */
 .right-inspector {
-  width: 310px;
+  width: 320px;
   background: var(--bg-sidebar);
   border-left: 1px solid var(--border-subtle);
   display: flex;
@@ -241,7 +277,7 @@ body {
 
 .inspector-tab-btn {
   flex: 1;
-  padding: 10px 0;
+  padding: 11px 0;
   text-align: center;
   font-size: 0.75rem;
   font-weight: 700;
@@ -272,7 +308,7 @@ body {
   gap: 16px;
 }
 
-/* Form Groups & Controls */
+/* Control Groups */
 .control-group {
   display: flex;
   flex-direction: column;
@@ -310,23 +346,56 @@ body {
   border-color: var(--accent-cyan);
 }
 
-/* Color Picker Row */
 .color-picker-box {
   display: flex;
   align-items: center;
   gap: 8px;
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: var(--radius-xs);
 }
 .color-swatch-input {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   background: transparent;
+}
+
+/* Elements Grid in Add Panel */
+.elements-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.element-add-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+.element-add-card:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-cyan);
+  transform: translateY(-2px);
+}
+.element-add-card .el-icon {
+  font-size: 1.4rem;
+}
+.element-add-card .el-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
 }
 
 /* Layer Tree List */
@@ -400,7 +469,7 @@ body {
   background: var(--bg-panel);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
-  max-width: 600px;
+  max-width: 620px;
   width: 100%;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
   overflow: hidden;
@@ -408,7 +477,7 @@ body {
 }
 
 @keyframes modalScale {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
 
@@ -427,7 +496,6 @@ body {
   gap: 16px;
 }
 
-/* Presets Grid in Modal */
 .presets-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -438,7 +506,7 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 14px;
+  padding: 16px;
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: center;
